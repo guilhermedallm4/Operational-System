@@ -1,13 +1,24 @@
 Processador 1:
 b1;0;10
-c1;10;8
-b3;18;7
-b2;25;3
-a2;28;1
+a1;10;5
+Total: 15
 
 Processador 2:
 a3;0;10
-b4;10;8
-a1;18;5
-c2;23;2
+b2;10;3
+Total: 13
+
+Processador 3:
+c1;0;8
+c2;8;2
+Total: 10
+
+Processador 4:
+b4;0;8
+a2;8;1
+Total: 9
+
+Processador 5:
+b3;0;7
+Total: 7
 

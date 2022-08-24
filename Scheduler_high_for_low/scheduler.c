@@ -28,7 +28,7 @@ int main(){
     scanf("%d", &processador);
     for(int w=1; w <= processador;w++){
         wRiteArchive(pBuffer, w, processador, lines);
-    }
+    }   
     fclose(arq);
     free(pBuffer);
     exit(1);
@@ -113,6 +113,9 @@ void *wRiteArchive(void *pBuffer, int initial, int processador, int lines){
             fprintf(read ,"%s;%d;%d\n", (char *)(pBuffer + ((CARAC * i))), aux,*(int *)(pBuffer + ((CARAC + TIME) * i)));
             aux += *(int *)(pBuffer + ((CARAC + TIME) * i));
             i+= processador;
+            if(i>lines){
+                fprintf(read, "Total: %d\n", aux);
+            }
         }
         fprintf(read,"\n");
     fclose(read);
