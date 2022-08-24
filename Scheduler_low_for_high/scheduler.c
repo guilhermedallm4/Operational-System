@@ -115,6 +115,9 @@ void *wRiteArchive(void *pBuffer, int initial, int processador, int lines){
             fprintf(read ,"%s;%d;%d\n", (char *)(pBuffer + ((CARAC * i))), aux,*(int *)(pBuffer + ((CARAC + TIME) * i)));
             aux += *(int *)(pBuffer + ((CARAC + TIME) * i));
             i+= processador;
+            if(i>lines){
+                fprintf(read, "Total: %d\n", aux);
+            }
         }
         fprintf(read,"\n");
     fclose(read);
