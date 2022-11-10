@@ -90,7 +90,7 @@ int main(){
     sem_init(&semaphore_thread, 0, 1);
     int w = 1, value = 10, back = 0, i;
     float em_especie = 0, em_taxa = 0;
-    float value_species, value_subsidy, value_fees, fees_subsidy = 0.2;
+    float value_species, value_subsidy, value_fees;
     for(i = 0; i < group; i++){
         printf("\n");
         cliente[i].value_imovel = (rand() % 450000) + 50000;
@@ -116,8 +116,6 @@ int main(){
         em_especie += (cliente[i].have_species);
         em_taxa += cliente[i].have_fees;
     }
-
-
 
     for(i = 0; i < group;i++){
         pthread_create(&tid[i], NULL, verification_value, (void *)i);
