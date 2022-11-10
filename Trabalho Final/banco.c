@@ -113,7 +113,7 @@ int main(){
         cliente[i].have_fees = (rand() % 50) + 51;
         printf("%f\n", cliente[i].have_fees);
         cliente[i].have_fees = (cliente[i].value_imovel * 0.05) * (cliente[i].have_fees/100);
-        em_especie += (cliente[i].value_imovel - cliente[i].have_subsidy);
+        em_especie += (cliente[i].have_species);
         em_taxa += cliente[i].have_fees;
     }
 
@@ -130,6 +130,6 @@ int main(){
     sem_destroy(&semaphore_thread);
     printf("\nTotal em imoveis devolvido pelos clientes: %f\nTotal em taxa devolvido pelos clientes: %f\n", em_especie, em_taxa);
     printf("\n");
-    printf("Os Clientes entregaram todos os recursos, atualmente o banco possui\nEm especie: %f\nEm taxa: %f\n Em subisidu: %f", species_bank, fees_bank, subsidy_bank);
+    printf("Os Clientes entregaram todos os recursos, atualmente o banco possui\nEm especie: %f\nEm taxa: %f\nEm subisidu: %f", species_bank, fees_bank, subsidy_bank);
 
 }
