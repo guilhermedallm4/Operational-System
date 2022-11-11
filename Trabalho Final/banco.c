@@ -131,28 +131,29 @@ int main(){
     }
 
     float subsidy_ajuste = 0;
-    int ajuste = 5;
+    int ajuste = 5, initial = 0;
     while(ajuste < 15){
-     if(i == 5){
+     if(initial == 5){
                 species_bank += (species_bank * 0.5);
                 fees_bank += (fees_bank * 0.5);
                 subsidy_bank += (subsidy_bank * 0.5);
                 subsidy_ajuste = cliente[i].have_subsidy * 0.5;
                 cliente[i].have_subsidy += subsidy_ajuste;
             }
-        else if(i == 10){
+        else if(initial == 10){
                 species_bank += (species_bank * 0.5);
                 fees_bank += (fees_bank * 0.5);
                 subsidy_bank += (subsidy_bank * 0.5);
                 subsidy_ajuste = cliente[i].have_subsidy * 0.5;
                 cliente[i].have_subsidy += subsidy_ajuste;
             }
-        for(i = 0; i < ajuste;i++){
+        for(i = initial; i < ajuste;i++){
             pthread_create(&tid[i], NULL, verification_value, (void *)i);
         }
-        for(i = 0; i < ajuste; i++){
+        for(i = initial; i < ajuste; i++){
             pthread_join(tid[i], NULL);
         }
+        initial += 5;
         ajuste += 5;
     }
     sem_destroy(&semaphore_thread);
