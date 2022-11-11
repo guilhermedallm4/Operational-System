@@ -132,7 +132,7 @@ int main(){
 
     float subsidy_ajuste = 0;
     int ajuste = 5, initial = 0;
-    while(ajuste < 15){
+    while(ajuste <= 15){
      if(initial == 5){
                 species_bank += (species_bank * 0.5);
                 fees_bank += (fees_bank * 0.5);
