@@ -11,15 +11,12 @@ int value = 0;
 int order[14], indice = 0;
 int inseguro = 0;
 
-
-
-typedef struct{
+typedef struct {
     float have_fees;
     float have_subsidy;
     float have_species;
     float value_imovel;
-}Cliente;
-
+} Cliente;
 
 Cliente cliente[15];
 
@@ -34,37 +31,27 @@ void *verification_value(void *args){
     int i;
     sem_wait(&semaphore_thread);
     i = (int *)args;
-    printf("%d\n", i);
     value_specie = cliente[i].have_species - cliente[i].have_subsidy;
     value_fees = cliente[i].have_fees;
-    printf("Thread %d precisa de %.2f em especie ", i, value_specie);
+    printf("\nThread (%d) precisa de %.2f$ em espécie.", i, value_specie);
     sem_post(&semaphore_thread);
     sem_wait(&recurso);
     while(value_fees > fees_bank || value_specie > species_bank || cliente[i].have_subsidy > subsidy_bank){
-      printf("Thread %d aguardando recurso\n", i);
-      sleep(4);
+        printf("Thread (%d) está aguardando recursos.\n\n", i);
+        sleep(4);
+        if(inseguro == 4){
+            inseguro++;
+        } else if(inseguro == 5){
+            printf("Estado inseguro, encerrando processo %d.\n", i);
+            return 0;
+        }
     }
     sem_post(&recurso);
 
-    printf("\n");
-    printf("\n");
+    printf("\n\n");
     sem_wait(&semaphore_thread);
-    printf("Thread %d está sendo atendido\n", i);
-    
-    printf("\n");
-    printf("\n");
+    printf("Thread (%d) está sendo atendida.\n\n\n", i);
     sleep(4);
-    sem_wait(&recurso);
-    while(value_fees > fees_bank || value_specie > species_bank || cliente[i].have_subsidy > subsidy_bank){
-      printf("Thread %d aguardando recurso\n", i);
-      sleep(4);
-        if(inseguro == 4){
-            printf("Estado inseguro, encerrando processo!\n");
-            return 0;
-      }
-      
-    }
-    sem_post(&recurso);
     species_bank -= value_specie;
     fees_bank -= value_fees;
     subsidy_bank -= cliente[i].have_subsidy;
@@ -77,35 +64,33 @@ void *verification_value(void *args){
             parcela_fees = value_fees / 8;
             parcela_specie = ceil(parcela_specie);
             parcela_fees = ceil(parcela_fees);
-            printf("Thread %d Devolvendo em 8 parcelas o valor de %.2f em especie e %.2f em taxa\n", i, parcela_specie, parcela_fees);
+            printf("Thread (%d) devolvendo em 8 parcelas o valor de %.2f$ em espécie e %.2f$ em taxa.\n", i, parcela_specie, parcela_fees);
             cliente[i].have_species -= parcela_specie;
             species_bank += parcela_specie;
             cliente[i].have_fees -= parcela_fees;
             fees_bank += parcela_fees;
-            printf("Parcela %d: \n valor em especie: %.2f\n valor em taxa: %.2f\n", counter+1,  parcela_specie, parcela_fees);
+            printf("Thread (%d) parcela %d:\n\tValor em espécie: %.2f$\n\tValor em taxa: %.2f$.\n", i, counter+1,  parcela_specie, parcela_fees);
         }
         else{
             cliente[i].have_species -= parcela_specie;
             species_bank += parcela_specie;
             cliente[i].have_fees -= parcela_fees;
             fees_bank += parcela_fees;
-            printf("Thread %d Parcela %d: \n valor em especie: %.2f\n valor em taxa: %.2f\n", i, counter+1,  parcela_specie, parcela_fees);
+            printf("Thread (%d) parcela %d:\n\tValor em espécie: %.2f$\n\tValor em taxa: %.2f$.\n", i, counter+1,  parcela_specie, parcela_fees);
         }    
-        printf("\n");
-        printf("\n");
-            counter++;
+        printf("\n\n");
+        counter++;
     }
+    subsidy_bank += cliente[i].have_subsidy;
     cliente[i].have_subsidy = 0;
     order[indice] = i;
     indice++;
     inseguro++;
     sem_post(&semaphore_thread);
-    
-    
 }
 
-
 int main(){
+    printf("\nInicialmente o banco possui:\n\tEm especie: %.2f$\n\tEm taxa: %.2f$\n\tEm subsídio: %.2f$\n", species_bank, fees_bank, subsidy_bank);
     int group = GRUPO;
     srand(time(NULL));
     pthread_t tid[group];
@@ -117,7 +102,7 @@ int main(){
     for(i = 0; i < group; i++){
         printf("\n");
         cliente[i].value_imovel = (rand() % 50000) + 450000;
-        printf("Imovel: %.2f\n", cliente[i].value_imovel);
+        printf("Valor imóvel: %.2f$\n", cliente[i].value_imovel);
         cliente[i].have_subsidy = (rand() % 2);
         if(cliente[i].have_subsidy == 0){
             cliente[i].have_subsidy = cliente[i].value_imovel * 0.05;
@@ -130,12 +115,12 @@ int main(){
         }
         
         cliente[i].have_species = (rand() % 30) + 41;
-        printf("%f\n", cliente[i].have_species);
         cliente[i].have_species = cliente[i].value_imovel * (cliente[i].have_species/100);
+        printf("Cliente espécie: %.2f$\n", cliente[i].have_species);
 
         cliente[i].have_fees = (rand() % 50) + 51;
-        printf("%f\n", cliente[i].have_fees);
         cliente[i].have_fees = (cliente[i].value_imovel * 0.05) * (cliente[i].have_fees/100);
+        printf("Cliente taxa: %.2f$\n", cliente[i].have_fees);
         em_especie += (cliente[i].value_imovel - cliente[i].have_subsidy);
         em_taxa += cliente[i].have_fees;
     }
@@ -143,40 +128,36 @@ int main(){
     float subsidy_ajuste = 0;
     int ajuste = 5, initial = 0;
     while(ajuste <= 15){
-     if(initial == 5){
-                species_bank += (species_bank * 0.5);
-                fees_bank += (fees_bank * 0.5);
-                subsidy_bank += (subsidy_bank * 0.5);
-                subsidy_ajuste = cliente[i].have_subsidy * 0.5;
-                cliente[i].have_subsidy += subsidy_ajuste;
-            }
+        if(initial == 5){
+            species_bank += (species_bank * 0.5);
+            fees_bank += (fees_bank * 0.5);
+            subsidy_bank += (subsidy_bank * 0.5);
+            subsidy_ajuste = cliente[i].have_subsidy * 0.5;
+            cliente[i].have_subsidy += subsidy_ajuste;
+        }
         else if(initial == 10){
-                species_bank += (species_bank * 0.5);
-                fees_bank += (fees_bank * 0.5);
-                subsidy_bank += (subsidy_bank * 0.5);
-                subsidy_ajuste = cliente[i].have_subsidy * 0.5;
-                cliente[i].have_subsidy += subsidy_ajuste;
-            }
-        for(i = initial; i < ajuste;i++){
+            species_bank += (species_bank * 0.5);
+            fees_bank += (fees_bank * 0.5);
+            subsidy_bank += (subsidy_bank * 0.5);
+            subsidy_ajuste = cliente[i].have_subsidy * 0.5;
+            cliente[i].have_subsidy += subsidy_ajuste;
+        }
+        for(i = initial; i < ajuste;i++)
             pthread_create(&tid[i], NULL, verification_value, (void *)i);
-
-        }
-        for(i = initial; i < ajuste; i++){
+        for(i = initial; i < ajuste; i++)
             pthread_join(tid[i], NULL);
-        }
+    
         inseguro = 0;
         initial += 5;
         ajuste += 5;
     }
+
     sem_destroy(&semaphore_thread);
     sem_destroy(&recurso);
-    printf("\nTotal em imoveis devolvido pelos clientes: %.2f\nTotal em taxa devolvido pelos clientes: %.2f\n", em_especie, em_taxa);
-    printf("\n");
-    printf("Os Clientes entregaram todos os recursos, atualmente o banco possui\nEm especie: %.2f\nEm taxa: %.2f\n Em subisidu: %f", species_bank, fees_bank, subsidy_bank);
-    printf("\n");
-    printf("Sequência segura: \n");
+    printf("\nTotal em imóveis devolvido pelos clientes: %.2f$\nTotal em taxa devolvido pelos clientes: %.2f$\n", em_especie, em_taxa);
+    printf("\nOs clientes entregaram todos os recursos, atualmente o banco possui:\n\tEm especie: %.2f$\n\tEm taxa: %.2f$\n\tEm subsídio: %.2f$", species_bank, fees_bank, subsidy_bank);
+    printf("\n\nSequência segura:\n");
     for(i = 0; i<group; i++){
-        printf(" Pessoa %d ->", order[i]);
+        printf("-> Pessoa %d ", order[i]);
     }
-
 }
