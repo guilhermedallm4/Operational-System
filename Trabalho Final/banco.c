@@ -35,7 +35,7 @@ void *verification_value(void *args){
     value_fees = cliente[i].have_fees;
     printf("\nThread (%d) precisa de %.2f$ em espécie.", i, value_specie);
     sem_post(&semaphore_thread);
-    sem_wait(&recurso);
+        sem_wait(&recurso);
     while(value_fees > fees_bank || value_specie > species_bank || cliente[i].have_subsidy > subsidy_bank){
         printf("Thread (%d) está aguardando recursos.\n\n", i);
         sleep(4);
