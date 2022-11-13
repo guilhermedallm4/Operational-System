@@ -9,6 +9,7 @@
 float species_bank = 500000, subsidy_bank = 100000, fees_bank = 30000;
 int value = 0;
 int order[14], indice = 0;
+int inseguro = 0;
 
 
 
@@ -33,6 +34,7 @@ void *verification_value(void *args){
     int i;
     sem_wait(&semaphore_thread);
     i = (int *)args;
+    printf("%d\n", i);
     value_specie = cliente[i].have_species - cliente[i].have_subsidy;
     value_fees = cliente[i].have_fees;
     printf("Thread %d precisa de %.2f em especie ", i, value_specie);
@@ -56,9 +58,9 @@ void *verification_value(void *args){
     while(value_fees > fees_bank || value_specie > species_bank || cliente[i].have_subsidy > subsidy_bank){
       printf("Thread %d aguardando recurso\n", i);
       sleep(4);
-        if(indice == 13){
-        printf("Estado inseguro, encerrando processo!\n");
-        return 0;
+        if(inseguro == 4){
+            printf("Estado inseguro, encerrando processo!\n");
+            return 0;
       }
       
     }
@@ -73,6 +75,8 @@ void *verification_value(void *args){
         if(counter == 0){
             parcela_specie = value_specie / 8;
             parcela_fees = value_fees / 8;
+            parcela_specie = ceil(parcela_specie);
+            parcela_fees = ceil(parcela_fees);
             printf("Thread %d Devolvendo em 8 parcelas o valor de %.2f em especie e %.2f em taxa\n", i, parcela_specie, parcela_fees);
             cliente[i].have_species -= parcela_specie;
             species_bank += parcela_specie;
@@ -91,10 +95,10 @@ void *verification_value(void *args){
         printf("\n");
             counter++;
     }
-    subsidy_bank += cliente[i].have_subsidy;
     cliente[i].have_subsidy = 0;
     order[indice] = i;
     indice++;
+    inseguro++;
     sem_post(&semaphore_thread);
     
     
@@ -155,10 +159,12 @@ int main(){
             }
         for(i = initial; i < ajuste;i++){
             pthread_create(&tid[i], NULL, verification_value, (void *)i);
+
         }
         for(i = initial; i < ajuste; i++){
             pthread_join(tid[i], NULL);
         }
+        inseguro = 0;
         initial += 5;
         ajuste += 5;
     }
