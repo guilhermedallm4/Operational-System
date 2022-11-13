@@ -1,7 +1,7 @@
 # TRABALHO SISTEMAS OPERACIONAS - Simulação de crédito bancário.
 
 Componentes do grupo:
-Otavio Fernandes dos Satos e Guilherme Dallmann Lima.
+Guilherme Dallmann Lima & Otávio Fernandes dos Santos.
 
 
 O problema consiste em simular uma situação de solicitações de crédito imobiliário para
@@ -11,8 +11,3 @@ imóvel (exigem % de entrada). Para famílias que teriam dificuldade de ter o se
 aprovado (famílias de baixa renda), o governo oferece um subsídio destinado,
 exclusivamente, à compra da casa própria (porém, devem respeitar a uma série de regras
 e imposições). O valor do subsídio varia conforme faixa de renda familiar.
-
-
-
-
-
