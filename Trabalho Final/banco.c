@@ -58,7 +58,7 @@ void *verification_value(void *args){
       sleep(4);
         if(indice == 13){
         printf("Estado inseguro, encerrando processo!\n");
-        exit(0);
+        return 0;
       }
       
     }
