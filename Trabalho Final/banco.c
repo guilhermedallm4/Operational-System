@@ -73,7 +73,7 @@ void *verification_value(void *args){
         if(counter == 0){
             parcela_specie = value_specie / 8;
             parcela_fees = value_fees / 8;
-            printf("Thread %d Devolvendo em 6 parcelas o valor de %.2f em especie e %.2f em taxa\n", i, parcela_specie, parcela_fees);
+            printf("Thread %d Devolvendo em 8 parcelas o valor de %.2f em especie e %.2f em taxa\n", i, parcela_specie, parcela_fees);
             cliente[i].have_species -= parcela_specie;
             species_bank += parcela_specie;
             cliente[i].have_fees -= parcela_fees;
@@ -91,6 +91,7 @@ void *verification_value(void *args){
         printf("\n");
             counter++;
     }
+    subsidy_bank += cliente[i].have_subsidy;
     cliente[i].have_subsidy = 0;
     order[indice] = i;
     indice++;
