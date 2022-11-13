@@ -39,10 +39,18 @@ void *verification_value(void *args){
     value_fees = cliente[i].have_fees;
     printf("Thread %d precisa de %.2f em especie ", i, value_specie);
     sem_post(&semaphore_thread);
-    sem_wait(&recurso);
+        sem_wait(&recurso);
     while(value_fees > fees_bank || value_specie > species_bank || cliente[i].have_subsidy > subsidy_bank){
       printf("Thread %d aguardando recurso\n", i);
       sleep(4);
+       if(inseguro == 4){
+            inseguro++;
+      }
+      else if(inseguro == 5){
+            printf("Estado inseguro, encerrando processo %d!\n", i);
+            return 0;
+      }
+      
     }
     sem_post(&recurso);
 
@@ -54,17 +62,6 @@ void *verification_value(void *args){
     printf("\n");
     printf("\n");
     sleep(4);
-    sem_wait(&recurso);
-    while(value_fees > fees_bank || value_specie > species_bank || cliente[i].have_subsidy > subsidy_bank){
-      printf("Thread %d aguardando recurso\n", i);
-      sleep(4);
-        if(inseguro == 4){
-            printf("Estado inseguro, encerrando processo!\n");
-            return 0;
-      }
-      
-    }
-    sem_post(&recurso);
     species_bank -= value_specie;
     fees_bank -= value_fees;
     subsidy_bank -= cliente[i].have_subsidy;
@@ -95,6 +92,7 @@ void *verification_value(void *args){
         printf("\n");
             counter++;
     }
+    subsidy_bank += cliente[i].have_subsidy;
     cliente[i].have_subsidy = 0;
     order[indice] = i;
     indice++;
